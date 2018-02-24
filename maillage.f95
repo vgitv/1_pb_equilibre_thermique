@@ -21,6 +21,9 @@ MODULE maillage
 
 contains
 
+    ! -------------------------------------------------------------------------------------------------------
+    ! constructeur Mesh
+    ! -------------------------------------------------------------------------------------------------------
     subroutine newMesh(x, m)
         ! paramètres
         real(rp), dimension(:) :: x
@@ -50,6 +53,20 @@ contains
         do i = 1, l
             m%h(i) = m%x2(i + 1) - m%x2(i)
         end do
+    end subroutine
+
+
+
+    ! -------------------------------------------------------------------------------------------------------
+    ! destructeur Mesh
+    ! -------------------------------------------------------------------------------------------------------
+    subroutine rmMesh(m)
+        ! paramètres
+        type(Mesh) :: m
+
+        if (allocated(m%x)) then
+            deallocate(m%x, m%h, m%x2, m%h2)
+        end if
     end subroutine
 
 END MODULE maillage
