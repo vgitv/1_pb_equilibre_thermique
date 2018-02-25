@@ -16,10 +16,8 @@ set ylabel "y"
 #set yrange[-1.5:1.5]
 
 # tracé
-plot "sorties/uIni.dat"           u 1:2 w l lc rgb "#008000" lw 1 title "condition initiale",\
-     "sorties/uGodunov.dat"       u 1:2 w l lc rgb "#FF4500" lw 1 title "godunov",\
-     "sorties/uLaxFriedrichs.dat" u 1:2 w l lc rgb "#4B0082" lw 1 title "lax friedrichs",\
-     "sorties/uLaxWendroff.dat"   u 1:2 w l lc rgb "#FFD700" lw 1 title "lax friedrichs"
+plot "sorties/approx.dat" u 1:2     lc rgb "#008000" lw 1 title "approximation",\
+     "sorties/sol.dat"    u 1:2 w l lc rgb "#FF4500" lw 1 title "solution"
 
 # affichage écran
 set term wxt enhanced
