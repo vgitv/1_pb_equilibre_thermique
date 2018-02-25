@@ -1,3 +1,12 @@
+! ===========================================================================================================
+! Variable structurée Mesh et fonction relatives
+!
+! Maillage avec interfaces pour schémas de type volumes finis. Sous programmes :
+!
+! newMesh
+! rmMesh
+! ===========================================================================================================
+
 MODULE maillage
 
     use math

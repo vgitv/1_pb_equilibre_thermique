@@ -80,4 +80,29 @@ contains
         b(m%l) = b(m%l) + ur / m%h2(m%l + 1)
     end subroutine build_b
 
+
+
+    ! -------------------------------------------------------------------------------------------------------
+    ! fonction test pour algo newton 1D
+    ! -------------------------------------------------------------------------------------------------------
+    function g(x)
+        ! paramètres
+        real(rp), intent(in) :: x
+
+        ! return
+        real(rp) :: g
+
+        g = (x - 1.0_rp) * (x + 1.0_rp) * (x - 3.0_rp)
+    end function
+
+    function gp(x)
+        ! paramètres
+        real(rp), intent(in) :: x
+
+        ! return
+        real(rp) :: gp
+
+        gp = (x + 1.0_rp) * (x - 3.0_rp) + (x - 1.0_rp) * (x - 3.0_rp) + (x - 1.0_rp) * (x + 1.0_rp)
+    end function
+
 END MODULE donnees
