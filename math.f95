@@ -18,6 +18,7 @@
 ! norme2
 ! normeInf
 ! trapeze
+! newton1D
 ! =====================================================================
 
 MODULE math
@@ -528,5 +529,37 @@ contains
             somme = somme + (x(i + 1) - x(i)) * (fx(i) + fx(i + 1)) / 2
         end do
     end subroutine trapeze
+
+
+
+    ! -------------------------------------------------------------------------------------------------------
+    ! Méthode de Newton pour fonctions 1D (résolution f(x) = 0)
+    ! -------------------------------------------------------------------------------------------------------
+    subroutine newton1D(x0, f, fp, err, itmax, x2)
+        ! paramètres
+        real(rp), intent(in) :: x0
+        real(rp), external :: f, fp
+        real(rp), intent(in) :: err
+        integer, intent(in) :: itmax
+        real(rp), intent(out) :: x2
+
+        ! variables locales
+        integer :: i
+        real(rp) :: x1, dist
+
+        dist = 1000000.0_rp
+        x1 = x0
+
+        do while ((dist > err) .and. (i <= itmax))
+            x2 = x1 - f(x1) / fp(x1)
+            dist = abs(x2 - x1)
+            x1 = x2
+            i = i + 1
+        end do
+
+        if (i == itmax) then
+            write (*, *) "Program newton1D abort. Max iterations reach."
+        end if
+    end subroutine
 
 END MODULE math
