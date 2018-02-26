@@ -19,9 +19,13 @@ PROGRAM main
     real(rp) :: ul, ur
     real(rp) :: xmin, xmax
     real(rp), dimension(:), allocatable :: b, x, approx, sol
-    ! approx et sol du pb de dérive diffusion, itéré initial newton
-    real(rp), dimension(:), allocatable :: approx_dd, sol_dd, itInit
     real(rp) :: zero
+    ! approx et sol du pb de dérive diffusion, itéré initial newton
+    real(rp), dimension(:), allocatable :: approx_psi, sol_dd, itInit, approx_n, approx_p
+    ! validation newtonND
+    real(rp), dimension(2) :: temp
+    real(rp), dimension(:, :), allocatable :: mat
+    real(rp), dimension(:), allocatable :: zeroND
 
     ! lecture des données
     open(unit = 0, file = "entrees/constantes")
@@ -32,7 +36,7 @@ PROGRAM main
     read (0, *) xmax
     close(0)
 
-    allocate(A(n, n), b(n), x(n + 2), approx(n), sol(n), approx_dd(n), sol_dd(n), itInit(n))
+    allocate(A(n, n), b(n), x(n + 2), approx(n), sol(n), approx_psi(n), sol_dd(n), itInit(n))
 
     print *, "ÉQUATION DE POISSON"
     write (*, '("n = ",1I4,"   ul = ",1F4.1,"   ur = ",1F4.1,/,"I = [",1F4.1,","1F4.1," ]")') &
@@ -80,14 +84,30 @@ PROGRAM main
     print *
     print *, "ÉQUATION THERMIQUE"
     itInit = 0.0_rp
-    call newtonND(itInit, fmain, Jfmain, 0.001_rp, 10000, approx_dd)
-    call saveSol(maill%x, (/psi_l, approx_dd, psi_r/), "sorties/approx_dd.dat")
+    call newtonND(itInit, fmain, Jfmain, 0.00001_rp, 10000, approx_psi)
+    call saveSol(maill%x, (/psi_l, approx_psi, psi_r/), "sorties/approx_psi.dat")
+    allocate(approx_n(n + 2), approx_p(n + 2))
+    approx_n = delta_n * exp(  (/psi_l, approx_psi, psi_r/) )
+    approx_p     = delta_p * exp( -(/psi_l, approx_psi, psi_r/) )
+    call saveSol(maill%x, approx_n, "sorties/approx_n.dat")
+    call saveSol(maill%x, approx_p, "sorties/approx_p.dat")
+
+    allocate(zeroND(n))
+    call fmain(approx_psi, zeroND)
+    print *, "|fmain(approx)|_{\infty} : ", maxval(abs(zeroND))
+    deallocate(zeroND)
+
+    ! validation newtonND
+    !call newtonND((/0.1_rp, 0.1_rp/), test, jtest, 0.000000000001_rp, 1000, temp)
+    !print *, "### zéro ###"
+    !print *, temp
 
 
 
     !********************************************************************************************************
     ! désallocations finales
-    deallocate(A, b, x, approx, sol, approx_dd, sol_dd, itInit)
+    deallocate(A, b, x, approx, sol, approx_psi, sol_dd, itInit)
+    deallocate(approx_n, approx_p)
     call rmMesh(maill)
 
 END PROGRAM main

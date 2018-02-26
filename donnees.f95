@@ -126,13 +126,11 @@ contains
     subroutine fmain(psi, s)
         ! paramètres
         real(rp), dimension(:), intent(in) :: psi
-        real(rp), dimension(:), allocatable, intent(out) :: s
+        real(rp), dimension(:), intent(out) :: s
 
         ! variables locales
         real(rp), dimension(maill%l) :: temp
         integer :: i
-
-        allocate(s(maill%l))
 
         do i = 1, maill%l
             temp(i) = maill%h(i) * &
@@ -151,18 +149,38 @@ contains
     subroutine Jfmain(psi, jacobienne)
         ! paramètres
         real(rp), dimension(:), intent(in) :: psi
-        real(rp), dimension(:, :), allocatable, intent(out) :: jacobienne
+        real(rp), dimension(:, :), intent(out) :: jacobienne
 
         ! variables locales
         integer :: i
 
-        allocate(jacobienne(maill%l, maill%l))
-
-        jacobienne = 0.0_rp
+        jacobienne = A
         do i = 1, maill%l
             jacobienne(i, i) = A(i, i) + &
                 maill%h(i) * (delta_n * exp(psi(i)) + delta_p * exp(-psi(i)))
         end do
+    end subroutine
+
+
+
+    ! -------------------------------------------------------------------------------------------------------
+    ! validation newtonND
+    ! -------------------------------------------------------------------------------------------------------
+    subroutine test(x, s)
+        ! paramètres
+        real(rp), dimension(:), intent(in) :: x
+        real(rp), dimension(:), intent(out) :: s
+        s(1) = 2 * x(1) * x(2) + 1.0_rp
+        s(2) = 2 * x(1) + x(2)
+    end subroutine
+    subroutine jtest(x, m)
+        ! paramètres
+        real(rp), dimension(:), intent(in) :: x
+        real(rp), dimension(:, :), intent(out) :: m
+        m(1, 1) = 2 * x(2)
+        m(1, 2) = 2 * x(1)
+        m(2, 1) = 2.0_rp
+        m(2, 2) = 1.0_rp
     end subroutine
 
 END MODULE donnees
