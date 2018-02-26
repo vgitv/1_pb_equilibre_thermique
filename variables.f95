@@ -1,3 +1,9 @@
+! ===========================================================================================================
+! Variables permettant de construire fmain et Jfmain dans donnees.f95.
+!
+! À Importer par donnees.f95 et main.f95 SEULEMENT.
+! ===========================================================================================================
+
 MODULE variables
 
     use maillage

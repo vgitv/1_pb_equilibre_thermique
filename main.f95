@@ -1,6 +1,7 @@
 ! ===========================================================================================================
-! Approximation du pb de dérive diffusion stationnaire à l'équilibre thermique. Contenu :
+! Approximation du pb de dérive diffusion stationnaire à l'équilibre thermique.
 !
+! PLAN :
 ! Rappel équation de Poisson.
 ! Rappel méthode de Newton 1D.
 ! Résolution approchée équilibre thermique.
@@ -54,7 +55,7 @@ PROGRAM main
     call build_A(maill, A)
     call build_b(maill, f, ul, ur, b)
 
-    ! calcul approximation et solution exacte
+    ! calcul approximation Ax = b et solution exacte
     call linSolve("plu", maill%l, A, b, approx)
     sol = evaluate(u, maill%x)
 
@@ -65,7 +66,7 @@ PROGRAM main
 
 
     ! -------------------------------------------------------------------------------------------------------
-    ! Méthode de Newton 1D
+    ! Méthode de Newton 1D sur une fonction quelconque g ayant 3 zéros
     ! -------------------------------------------------------------------------------------------------------
     print *
     print *, "MÉTODE DE NEWTON"
@@ -83,24 +84,30 @@ PROGRAM main
     ! -------------------------------------------------------------------------------------------------------
     print *
     print *, "ÉQUATION THERMIQUE"
+
+    ! approximation de psi solution du fmain(\Psi) = A \Psi + b(\Psi) + b^{D} = 0
     itInit = 0.0_rp
     call newtonND(itInit, fmain, Jfmain, 0.00001_rp, 10000, approx_psi)
     call saveSol(maill%x, (/psi_l, approx_psi, psi_r/), "sorties/approx_psi.dat")
+
+    ! approximations de n et p
     allocate(approx_n(n + 2), approx_p(n + 2))
     approx_n = delta_n * exp(  (/psi_l, approx_psi, psi_r/) )
-    approx_p     = delta_p * exp( -(/psi_l, approx_psi, psi_r/) )
+    approx_p = delta_p * exp( -(/psi_l, approx_psi, psi_r/) )
     call saveSol(maill%x, approx_n, "sorties/approx_n.dat")
     call saveSol(maill%x, approx_p, "sorties/approx_p.dat")
 
+    ! vérif accuracy de psi
     allocate(zeroND(n))
     call fmain(approx_psi, zeroND)
     print *, "|fmain(approx)|_{\infty} : ", maxval(abs(zeroND))
-    deallocate(zeroND)
 
+    ! >>>>>>>>>>>>>>
     ! validation newtonND
     !call newtonND((/0.1_rp, 0.1_rp/), test, jtest, 0.000000000001_rp, 1000, temp)
     !print *, "### zéro ###"
     !print *, temp
+    ! <<<<<<<<<<<<<<
 
 
 
@@ -108,6 +115,7 @@ PROGRAM main
     ! désallocations finales
     deallocate(A, b, x, approx, sol, approx_psi, sol_dd, itInit)
     deallocate(approx_n, approx_p)
+    deallocate(zeroND)
     call rmMesh(maill)
 
 END PROGRAM main

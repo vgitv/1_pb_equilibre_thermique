@@ -164,7 +164,7 @@ contains
 
 
     ! -------------------------------------------------------------------------------------------------------
-    ! validation newtonND
+    ! validation newtonND en dimension 2 test(x) = (0, 0) à pour solution (0.5, -1)
     ! -------------------------------------------------------------------------------------------------------
     subroutine test(x, s)
         ! paramètres
@@ -173,6 +173,7 @@ contains
         s(1) = 2 * x(1) * x(2) + 1.0_rp
         s(2) = 2 * x(1) + x(2)
     end subroutine
+
     subroutine jtest(x, m)
         ! paramètres
         real(rp), dimension(:), intent(in) :: x
