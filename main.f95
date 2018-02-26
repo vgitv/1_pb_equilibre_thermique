@@ -10,6 +10,7 @@ PROGRAM main
 
     use math
     use maillage
+    use variables
     use donnees
 
     implicit none
@@ -17,9 +18,9 @@ PROGRAM main
     integer :: n, i
     real(rp) :: ul, ur
     real(rp) :: xmin, xmax
-    real(rp), dimension(:, :), allocatable :: A
     real(rp), dimension(:), allocatable :: b, x, approx, sol
-    type(Mesh) :: maill
+    ! approx et sol du pb de dérive diffusion, itéré initial newton
+    real(rp), dimension(:), allocatable :: approx_dd, sol_dd, itInit
     real(rp) :: zero
 
     ! lecture des données
@@ -31,7 +32,7 @@ PROGRAM main
     read (0, *) xmax
     close(0)
 
-    allocate(A(n, n), b(n), x(n + 2), approx(n), sol(n))
+    allocate(A(n, n), b(n), x(n + 2), approx(n), sol(n), approx_dd(n), sol_dd(n), itInit(n))
 
     print *, "ÉQUATION DE POISSON"
     write (*, '("n = ",1I4,"   ul = ",1F4.1,"   ur = ",1F4.1,/,"I = [",1F4.1,","1F4.1," ]")') &
@@ -78,12 +79,15 @@ PROGRAM main
     ! -------------------------------------------------------------------------------------------------------
     print *
     print *, "ÉQUATION THERMIQUE"
+    itInit = 0.0_rp
+    call newtonND(itInit, fmain, Jfmain, 0.001_rp, 10000, approx_dd)
+    call saveSol(maill%x, (/psi_l, approx_dd, psi_r/), "sorties/approx_dd.dat")
 
 
 
     !********************************************************************************************************
     ! désallocations finales
-    deallocate(A, b, x, approx, sol)
+    deallocate(A, b, x, approx, sol, approx_dd, sol_dd, itInit)
     call rmMesh(maill)
 
 END PROGRAM main

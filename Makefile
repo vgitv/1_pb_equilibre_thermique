@@ -6,9 +6,9 @@ PROJECT = 1_pb_equilibre_thermique
 PROJECT = 1_pb_equilibre_thermique
 
 #
-SOURCES = main.f95 maillage.f95 math.f95 donnees.f95
-MODULES =          maillage.mod math.mod donnees.mod
-OBJECTS = main.o   maillage.o   math.o   donnees.o
+SOURCES = main.f95 maillage.f95 math.f95 donnees.f95 variables.f95
+MODULES =          maillage.mod math.mod donnees.mod variables.mod
+OBJECTS = main.o   maillage.o   math.o   donnees.o   variables.o
 CC      = gfortran -fbounds-check
 EXEC    = truc
 OTHER   =
@@ -31,11 +31,14 @@ main.o : main.f95 $(MODULES)
 math.o math.mod : math.f95
 	$(CC) -c math.f95 -o math.o
 
-donnees.o donnees.mod : donnees.f95 math.mod
+donnees.o donnees.mod : donnees.f95 math.mod variables.mod
 	$(CC) -c donnees.f95 -o donnees.o
 
 maillage.o maillage.mod : maillage.f95 math.mod
 	$(CC) -c maillage.f95 -o maillage.o
+
+variables.o variables.mod : variables.f95 variables.mod
+	$(CC) -c variables.f95 -o variables.o
 
 
 

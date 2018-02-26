@@ -2,11 +2,9 @@ MODULE donnees
 
     use math
     use maillage
+    use variables
 
     implicit none
-
-    real(rp), parameter :: delta_n = 1.0_rp
-    real(rp), parameter :: delta_p = 1.0_rp
 
 contains
 
@@ -123,70 +121,26 @@ contains
     ! =======================================================================================================
 
     ! -------------------------------------------------------------------------------------------------------
-    ! dopage
-    ! -------------------------------------------------------------------------------------------------------
-    function c_dopage(x)
-        ! paramètres
-        real(rp), intent(in) :: x
-
-        ! return
-        real(rp) :: c_dopage
-
-        c_dopage = 0.0_rp
-    end function
-
-
-
-    ! -------------------------------------------------------------------------------------------------------
-    ! fonction b du système A.psi + fc_b(psi) + bd = 0   (même matrice A que pour l'équation de Poisson)
-    ! -------------------------------------------------------------------------------------------------------
-    subroutine fc_b(m, psi, s)
-        ! paramètres
-        type(Mesh), intent(in) :: m
-        real(rp), dimension(:), intent(in) :: psi
-        real(rp), dimension(m%l), intent(out) :: s
-
-        ! variables locales
-        integer :: i
-
-        do i = 1, m%l
-            s(i) = m%h(i) * (delta_n * exp(psi(i)) - delta_p * exp(-psi(i)) - c_dopage(m%x(i + 1)))
-        end do
-    end subroutine
-
-
-
-    ! -------------------------------------------------------------------------------------------------------
-    ! terme constant bd du système A.psi + fc_b(psi) + bd = 0 (conditions de bord)
-    ! -------------------------------------------------------------------------------------------------------
-    subroutine cste_bd(m, psi_l, psi_r, s)
-        ! paramètres
-        type(Mesh), intent(in) :: m
-        real(rp), intent(in) :: psi_l, psi_r
-        real(rp), dimension(m%l), intent(out) :: s
-
-        s = 0.0_rp
-        s(1) = -psi_l / m%h2(1)
-        s(m%l) = -psi_r / m%h2(m%l + 1)
-    end subroutine
-
-
-
-    ! -------------------------------------------------------------------------------------------------------
     ! f(psi) = A*psi + fc_b(psi) + bd
     ! -------------------------------------------------------------------------------------------------------
-    subroutine fmain(m, A, psi, bd, s)
+    subroutine fmain(psi, s)
         ! paramètres
-        type(Mesh), intent(in) :: m
-        real(rp), dimension(m%l, m%l), intent(in) :: A
-        real(rp), dimension(m%l), intent(in) :: psi, bd
-        real(rp), dimension(m%l), intent(out) :: s
+        real(rp), dimension(:), intent(in) :: psi
+        real(rp), dimension(:), allocatable, intent(out) :: s
 
         ! variables locales
-        real(rp), dimension(m%l) :: temp
+        real(rp), dimension(maill%l) :: temp
+        integer :: i
 
-        call fc_b(m, psi, temp)
-        s = matmul(A, psi) + temp + bd
+        allocate(s(maill%l))
+
+        do i = 1, maill%l
+            temp(i) = maill%h(i) * &
+                (delta_n * exp(psi(i)) - delta_p * exp(-psi(i)) - c_dopage(maill%x(i + 1)))
+        end do
+        s = matmul(A, psi) + temp
+        s(1) = s(1) - psi_l / maill%h2(1)
+        s(maill%l) = s(maill%l) - psi_r / maill%h2(maill%l + 1)
     end subroutine
 
 
@@ -194,19 +148,20 @@ contains
     ! -------------------------------------------------------------------------------------------------------
     ! Jacobienne du système non linéaire pour le pb de dérive diffusion stationnaire à l'équilibre thermique
     ! -------------------------------------------------------------------------------------------------------
-    subroutine Jfmain(m, A, psi, jacobienne)
+    subroutine Jfmain(psi, jacobienne)
         ! paramètres
-        type(Mesh), intent(in) :: m
-        real(rp), dimension(m%l, m%l), intent(in) :: A
-        real(rp), dimension(m%l), intent(in) :: psi
-        real(rp), dimension(m%l, m%l), intent(out) :: jacobienne
+        real(rp), dimension(:), intent(in) :: psi
+        real(rp), dimension(:, :), allocatable, intent(out) :: jacobienne
 
         ! variables locales
         integer :: i
 
-        jacobienne = A
-        do i = 1, m%l
-            jacobienne(i, i) = jacobienne(i, i) + m%h(i) * (delta_n * exp(psi(i)) + delta_p * exp(-psi(i)))
+        allocate(jacobienne(maill%l, maill%l))
+
+        jacobienne = 0.0_rp
+        do i = 1, maill%l
+            jacobienne(i, i) = A(i, i) + &
+                maill%h(i) * (delta_n * exp(psi(i)) + delta_p * exp(-psi(i)))
         end do
     end subroutine
 
