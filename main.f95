@@ -19,7 +19,7 @@ PROGRAM main
     integer :: n, i
     real(rp) :: ul, ur
     real(rp) :: xmin, xmax
-    real(rp), dimension(:), allocatable :: b, x, approx, sol
+    real(rp), dimension(:), allocatable :: b, x2, approx, sol
     real(rp) :: zero
     ! approx et sol du pb de dérive diffusion, itéré initial newton
     real(rp), dimension(:), allocatable :: approx_psi, sol_dd, itInit, approx_n, approx_p
@@ -37,14 +37,14 @@ PROGRAM main
     read (0, *) xmax
     close(0)
 
-    allocate(A(n, n), b(n), x(n + 2), approx(n), sol(n), approx_psi(n), sol_dd(n), itInit(n))
+    allocate(A(n, n), b(n), x2(n + 1), approx(n), sol(n), approx_psi(n), sol_dd(n), itInit(n))
 
     print *, "ÉQUATION DE POISSON"
     write (*, '("n = ",1I4,"   ul = ",1F4.1,"   ur = ",1F4.1,/,"I = [",1F4.1,","1F4.1," ]")') &
         n, ul, ur, xmin, xmax
 
-    x = linspace(xmin, xmax, n + 2)
-    call newMesh(x, maill)
+    x2 = linspace(xmin, xmax, n + 1)
+    call newMesh(x2, maill)
 
 
 
@@ -113,7 +113,7 @@ PROGRAM main
 
     !********************************************************************************************************
     ! désallocations finales
-    deallocate(A, b, x, approx, sol, approx_psi, sol_dd, itInit)
+    deallocate(A, b, x2, approx, sol, approx_psi, sol_dd, itInit)
     deallocate(approx_n, approx_p)
     deallocate(zeroND)
     call rmMesh(maill)

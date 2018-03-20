@@ -13,8 +13,8 @@ MODULE variables
     real(rp), dimension(:, :), allocatable :: A
     real(rp), parameter :: delta_n = 1.0_rp
     real(rp), parameter :: delta_p = 1.0_rp
-    real(rp), save :: psi_l = 1.0_rp
-    real(rp), save :: psi_r = 2.0_rp
+    real(rp), save :: psi_l = 0.0_rp
+    real(rp), save :: psi_r = 0.0_rp
     type(Mesh), save :: maill
 
 contains
@@ -29,7 +29,7 @@ contains
         ! return
         real(rp) :: c_dopage
 
-        c_dopage = 3.0_rp
+        c_dopage = 10.0_rp
     end function
 
 END MODULE variables
