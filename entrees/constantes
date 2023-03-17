@@ -1,0 +1,5 @@
+9     ! n
+0.0D0  ! ul (condition dirichlet left)
+0.0D0  ! ur (condition dirichlet right)
+0.0D0  ! xmin
+1.0D0  ! xmax
