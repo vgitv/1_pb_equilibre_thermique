@@ -7,7 +7,7 @@ set output "graphes/poisson.eps"
 set encoding utf8
 
 # paramètres
-set title "Équation de transport à vitesse constante"
+set title "Équation de Poisson"
 set grid
 set xlabel "x"
 set ylabel "y"
@@ -26,7 +26,7 @@ set output "graphes/eq_thermique.eps"
 set encoding utf8
 
 # paramètres
-set title "Équation de transport à vitesse constante"
+set title "Équation à l'équilibre thermique"
 set grid
 set xlabel "x"
 set ylabel "y"
