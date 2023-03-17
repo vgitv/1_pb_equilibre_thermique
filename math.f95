@@ -578,7 +578,7 @@ contains
         interface
             subroutine f(psi, s)
                 real(8), dimension(:), intent(in) :: psi
-                real(8), dimension(:), allocatable, intent(out) :: s
+                real(8), dimension(:), intent(out) :: s
             end subroutine
         end interface
 
@@ -586,7 +586,7 @@ contains
         interface
             subroutine Jf(psi, jacobienne)
                 real(8), dimension(:), intent(in) :: psi
-                real(8), dimension(:, :), allocatable, intent(out) :: jacobienne
+                real(8), dimension(:, :), intent(out) :: jacobienne
             end subroutine
         end interface
 
@@ -595,8 +595,8 @@ contains
         real(rp), dimension(size(x0)), intent(out) :: x2
 
         ! variables locales
-        real(rp), dimension(:, :), allocatable :: A
-        real(rp), dimension(:), allocatable :: b
+        real(rp), dimension(size(x0), size(x0)) :: A
+        real(rp), dimension(size(x0)) :: b
         real(rp), dimension(size(x0)) :: temp
         integer :: i
         real(rp), dimension(size(x0)) :: x1
@@ -611,6 +611,16 @@ contains
             call Jf(x1, A)
             call f(x1, b)
             call linSolve("plu", size(x0), A, b, temp)
+            ! >>>>>>>>>>>>>>
+            !print *, "### A ###"
+            !call affMat(A)
+            !print *, "### temp ###"
+            !print *, temp
+            !print *, "### b ###"
+            !print *, b
+            !print *
+            !print *
+            ! <<<<<<<<<<<<<<
             x2 = x1 - temp
             call norme2(x2 - x1, dist)
             x1 = x2
@@ -620,8 +630,6 @@ contains
         if (i == itmax) then
             write (*, *) "Program newton1D abort. Max iterations reach."
         end if
-
-        deallocate(A, b)
     end subroutine
 
 END MODULE math
