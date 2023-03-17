@@ -24,8 +24,8 @@ PROGRAM main
 
     allocate(A(n, n), b(n), x(n + 2), approx(n), sol(n))
 
-    write (*, '("n = ",1I4,"   ul = ",1F4.1,"   ur = ",1F4.1,/,"I = [",1F4.1,","1F4.1," ]")') n, ul, ur, &
-        xmin, xmax
+    write (*, '("n = ",1I4,"   ul = ",1F4.1,"   ur = ",1F4.1,/,"I = [",1F4.1,","1F4.1," ]")') &
+        n, ul, ur, xmin, xmax
 
     x = linspace(xmin, xmax, n + 2)
     call newMesh(x, maill)
