@@ -29,17 +29,6 @@ PROGRAM main
     x = linspace(xmin, xmax, n + 2)
     call newMesh(x, maill)
 
-    print *, "### l"
-    print *, maill%l
-    print *, "### x"
-    print *, maill%x
-    print *, "### h2"
-    print *, maill%h2
-    print *, "### x2"
-    print *, maill%x2
-    print *, "### h"
-    print *, maill%h
-
     call buildA(x, A)
 
 

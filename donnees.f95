@@ -6,6 +6,7 @@ MODULE donnees
 
 contains
 
+    ! second membre du problème
     function f(x)
         ! paramètres
         real(rp), intent(in) :: x
@@ -14,39 +15,6 @@ contains
         real(rp) :: f
 
         f = 1.0_rp
-    end function
-
-
-
-    function hi(x, i)
-        ! paramètres
-        real(rp), dimension(:), intent(in) :: x
-        integer, intent(in) :: i
-
-        ! return
-        real(rp) :: hi
-
-        ! variables locales
-        integer :: n
-        real(rp) :: xm1, xm2
-
-        n = size(x)
-
-        if (i == 2) then
-            xm1 = x(1)
-            xm2 = (x(2) + x(3)) / 2.0_rp
-        else if ((i >=3) .and. (i <= n - 2)) then
-            xm1 = (x(i - 1) + x(i)) / 2.0_rp
-            xm2 = (x(i) + x(i + 1)) / 2.0_rp
-        else if (i == n - 1) then
-            xm1 = (x(n - 2) + x(n - 1)) / 2.0_rp
-            xm2 = x(n)
-        else
-            write (*, *) "Indice non valide pour function hi(x, i)"
-            stop
-        end if
-
-        hi = xm2 - xm1
     end function
 
 
