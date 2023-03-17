@@ -19,6 +19,7 @@
 ! normeInf
 ! trapeze
 ! newton1D
+! newtonND
 ! =====================================================================
 
 MODULE math
@@ -547,8 +548,10 @@ contains
         integer :: i
         real(rp) :: x1, dist
 
+        ! pour être sûr de rentrer une fois dans le while
         dist = 1000000.0_rp
         x1 = x0
+        i = 0
 
         do while ((dist > err) .and. (i <= itmax))
             x2 = x1 - f(x1) / fp(x1)
@@ -560,6 +563,65 @@ contains
         if (i == itmax) then
             write (*, *) "Program newton1D abort. Max iterations reach."
         end if
+    end subroutine
+
+
+
+    ! -------------------------------------------------------------------------------------------------------
+    ! Méthode de Newton pour fonctions ND (résolution f(x) = 0)
+    ! -------------------------------------------------------------------------------------------------------
+    subroutine newtonND(x0, f, Jf, err, itmax, x2)
+        ! paramètres
+        real(rp), dimension(:), intent(in) :: x0
+
+        ! fonction de Rn dans Rn
+        interface
+            subroutine f(psi, s)
+                real(8), dimension(:), intent(in) :: psi
+                real(8), dimension(:), allocatable, intent(out) :: s
+            end subroutine
+        end interface
+
+        ! jacobienne de f
+        interface
+            subroutine Jf(psi, jacobienne)
+                real(8), dimension(:), intent(in) :: psi
+                real(8), dimension(:, :), allocatable, intent(out) :: jacobienne
+            end subroutine
+        end interface
+
+        real(rp), intent(in) :: err
+        integer, intent(in) :: itmax
+        real(rp), dimension(size(x0)), intent(out) :: x2
+
+        ! variables locales
+        real(rp), dimension(:, :), allocatable :: A
+        real(rp), dimension(:), allocatable :: b
+        real(rp), dimension(size(x0)) :: temp
+        integer :: i
+        real(rp), dimension(size(x0)) :: x1
+        real(rp) :: dist
+
+        ! pour être sûr de rentrer une fois dans le while
+        dist = 1000000.0_rp
+        x1 = x0
+        i = 0
+
+        do while ((dist > err) .and. (i <= itmax))
+            call Jf(x1, A)
+            call f(x1, b)
+            call linSolve("plu", size(x0), A, b, temp)
+            x2 = x1 - temp
+            call norme2(x2 - x1, dist)
+            x1 = x2
+            i = i + 1
+        end do
+
+        if (i == itmax) then
+            write (*, *) "Program newton1D abort. Max iterations reach."
+        end if
+
+        deallocate(A, b)
     end subroutine
 
 END MODULE math
