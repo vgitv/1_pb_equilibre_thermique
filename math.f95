@@ -211,7 +211,7 @@ contains
         n = forme(1)
 
         do i = 1, n
-            print *, mat(i, :)
+            print '(100F7.1)', mat(i, :)
         end do
     end subroutine affMat
 
@@ -422,7 +422,7 @@ contains
         end do
 
         ! algorithme de remontée x tq Ux = y
-        print *, U(n, n), y(n)
+        !print *, U(n, n), y(n)
         x(n) = y(n) / U(n, n)
 
         do i = n - 1, 1, -1

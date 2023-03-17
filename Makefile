@@ -12,7 +12,7 @@ OBJECTS = main.o   maillage.o   math.o   donnees.o
 CC      = gfortran -fbounds-check
 EXEC    = truc
 OTHER   =
-PDF     =
+PDF     = entrees/TP.pdf
 
 
 

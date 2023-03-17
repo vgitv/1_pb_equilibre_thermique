@@ -23,6 +23,21 @@ contains
 
 
     ! -------------------------------------------------------------------------------------------------------
+    ! Solution de l'équation de Poisson avec f = 1 et ul = ur = 0
+    ! -------------------------------------------------------------------------------------------------------
+    function u(x)
+        ! paramètres
+        real(rp), intent(in) :: x
+
+        ! return
+        real(rp) :: u
+
+        u = x * (1.0_rp - x) / 2.0_rp
+    end function
+
+
+
+    ! -------------------------------------------------------------------------------------------------------
     ! Construction matrice A pour résolution A x = b dans le cas de l'équation de Poisson
     ! -------------------------------------------------------------------------------------------------------
     subroutine build_A(m, A)
@@ -33,8 +48,9 @@ contains
         ! variables locales
         integer :: i
 
+        A = 0.0_rp
         do i = 1, m%l - 1
-            A(i, i) = 1.0_rp / m%h2(i) - 1.0_rp / m%h2(i + 1)
+            A(i, i) = 1.0_rp / m%h2(i) + 1.0_rp / m%h2(i + 1)
             A(i, i + 1) = -1.0_rp / m%h2(i + 1)
             A(i + 1, i) = A(i, i + 1)
         end do
