@@ -1,12 +1,15 @@
 MODULE donnees
 
     use math
+    use maillage
 
     implicit none
 
 contains
 
+    ! -------------------------------------------------------------------------------------------------------
     ! second membre du problème
+    ! -------------------------------------------------------------------------------------------------------
     function f(x)
         ! paramètres
         real(rp), intent(in) :: x
@@ -19,49 +22,46 @@ contains
 
 
 
-    subroutine buildA(x, A)
+    ! -------------------------------------------------------------------------------------------------------
+    ! Construction matrice A pour résolution A x = b dans le cas de l'équation de Poisson
+    ! -------------------------------------------------------------------------------------------------------
+    subroutine build_A(m, A)
         ! paramètres
-        real(rp), dimension(:), intent(in) :: x
+        type(Mesh), intent(in) :: m
         real(rp), dimension(:, :), intent(out) :: A
 
         ! variables locales
-        integer :: i, n
-        real(rp) :: t1, t2
+        integer :: i
 
-        n = size(x) - 2
-
-        do i = 1, n - 1
-            t1 = 1.0_rp / (x(i + 1) - x(i))
-            t2 = 1.0_rp / (x(i + 2) - x(i + 1))
-            A(i, i) = t1 + t2
-            A(i, i + 1) = -t1
-            A(i + 1, i) = -t2
+        do i = 1, m%l - 1
+            A(i, i) = 1.0_rp / m%h2(i) - 1.0_rp / m%h2(i + 1)
+            A(i, i + 1) = -1.0_rp / m%h2(i + 1)
+            A(i + 1, i) = A(i, i + 1)
         end do
-        A(n, n) = 1.0_rp / (x(n + 1) - x(n)) + 1.0_rp / (x(n + 2) - x(n + 1))
-    end subroutine
+        A(m%l, m%l) = 1.0_rp / m%h2(m%l) + 1.0_rp / m%h2(m%l + 1)
+    end subroutine build_A
 
 
 
-    subroutine build_b(x, fc, ul, ur, b)
+    ! -------------------------------------------------------------------------------------------------------
+    ! Construction vecteur b pour résolution A x = b dans le cas de l'équation de Poisson
+    ! -------------------------------------------------------------------------------------------------------
+    subroutine build_b(m, fc, ul, ur, b)
         ! paramètres
-        real(rp), dimension(:), intent(in) :: x
+        type(Mesh), intent(in) :: m
         real(rp), dimension(:), intent(out) :: b
         real(rp), external :: fc
         real(rp), intent(in) :: ul, ur
 
         ! variables locales
-        integer :: i, n
-        real(rp) :: t
+        integer :: i
 
-        n = size(x) - 2
-
-        do i = 1, n
-            b(i) = hi(x, i + 1) * fc(x(i + 1))
+        do i = 1, m%l
+            b(i) = m%h(i) * f(m%x(i + 1))
         end do
 
-        t = 1.0_rp / (x(i + 1) - x(i))
-        b(1) = b(1) + ul / t
-        t = 1.0_rp / (x(i + 2) - x(i + 1))
-    end subroutine
+        b(1) = b(1) + ul / m%h2(1)
+        b(m%l) = b(m%l) + ur / m%h2(m%l + 1)
+    end subroutine build_b
 
 END MODULE donnees

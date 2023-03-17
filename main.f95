@@ -29,9 +29,13 @@ PROGRAM main
     x = linspace(xmin, xmax, n + 2)
     call newMesh(x, maill)
 
-    call buildA(x, A)
+    call build_A(maill, A)
+    call build_b(maill, f, ul, ur, b)
 
 
+    !********************************************************************************************************
+    ! désallocations finales
     deallocate(A, b, x, u)
+    call rmMesh(maill)
 
 END PROGRAM main
